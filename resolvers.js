@@ -1,6 +1,15 @@
 module.exports = {
   Query: {
-    getUser: () => null
+    getPosts: async (_, args, { Post }) => {
+      const posts = await Post.find({})
+        .sort({ createdDate: "desc" }) // 依照創建日期排序
+        // populate是monogo的方法，用來將createdBy跟User連結
+        .populate({
+          path: "createdBy",
+          model: "User"
+        });
+      return posts;
+    }
   },
   Mutation: {
     signupUser: async (_, { username, email, password }, { User }) => {

@@ -25,6 +25,10 @@ const PostSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+
+  // createdBy 跟 User連結
+  // 屬性 ('createdBy') === path
+  // ref ('User') === model
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,

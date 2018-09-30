@@ -1,10 +1,17 @@
 const { ApolloServer, gql } = require("apollo-server");
+const mongoose = require("mongoose");
 
-// 資料設定
-const todos = [
-  { task: "Wash car", completed: false },
-  { task: "Clean room", completed: true }
-];
+// 獲取資料庫URI
+require("dotenv").config({ path: "variables.env" });
+
+// mongo DB連結
+mongoose
+  .connect(
+    process.env.MONGO_URI,
+    { useNewUrlParser: true }
+  )
+  .then(() => console.log("DB connected"))
+  .catch(err => console.error(err));
 
 // 資料型別設置
 const typeDefs = gql`
@@ -17,31 +24,10 @@ const typeDefs = gql`
   type Query {
     getTodos: [Todo]
   }
-
-  # 新增
-  type Mutation {
-    addTodo(task: String, completed: Boolean): Todo
-  }
 `;
 
-const resolvers = {
-  // 查詢返回結果
-  Query: {
-    getTodos: () => todos
-  },
-  // 新增資料fn
-  Mutation: {
-    addTodo: (_, { task, completed }) => {
-      const todo = { task, completed };
-      todos.push(todo);
-      return todo;
-    }
-  }
-};
-
 const server = new ApolloServer({
-  typeDefs,
-  resolvers
+  typeDefs
 });
 
 server.listen().then(({ url }) => {

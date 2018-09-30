@@ -12,10 +12,23 @@ const typeDefs = gql`
     task: String
     completed: Boolean
   }
+
+  # 查詢設置
+  type Query {
+    getTodos: [Todo]
+  }
 `;
 
+// 查詢結果綁定
+const resolvers = {
+  Query: {
+    getTodos: () => todos
+  }
+};
+
 const server = new ApolloServer({
-  typeDefs
+  typeDefs,
+  resolvers
 });
 
 server.listen().then(({ url }) => {

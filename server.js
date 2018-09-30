@@ -13,16 +13,29 @@ const typeDefs = gql`
     completed: Boolean
   }
 
-  # 查詢設置
+  # 查詢
   type Query {
     getTodos: [Todo]
   }
+
+  # 新增
+  type Mutation {
+    addTodo(task: String, completed: Boolean): Todo
+  }
 `;
 
-// 查詢結果綁定
 const resolvers = {
+  // 查詢返回結果
   Query: {
     getTodos: () => todos
+  },
+  // 新增資料fn
+  Mutation: {
+    addTodo: (_, { task, completed }) => {
+      const todo = { task, completed };
+      todos.push(todo);
+      return todo;
+    }
   }
 };
 

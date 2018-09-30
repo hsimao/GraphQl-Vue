@@ -5,6 +5,7 @@ const path = require("path");
 
 const filePath = path.join(__dirname, "typeDefs.gql");
 const typeDefs = fs.readFileSync(filePath, "utf-8");
+const resolvers = require("./resolvers");
 
 // 獲取資料庫URI
 require("dotenv").config({ path: "variables.env" });
@@ -27,6 +28,7 @@ mongoose
 
 const server = new ApolloServer({
   typeDefs,
+  resolvers,
   context: {
     User,
     Post

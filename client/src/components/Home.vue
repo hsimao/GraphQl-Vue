@@ -1,13 +1,12 @@
 <template>
-  <v-container>
-
-    <h1>Home</h1>
-    <h2 v-if="$apollo.loading">Loading...</h2>
-    <ul v-else v-for="(post, index) in getPosts" :key="index">
-      <li>{{post.title}}</li>
-      <li>{{post.description}}</li>
-      <li>{{post.likes}}</li>
-    </ul>
+  <v-container v-if="getPosts">
+    <v-flex xs12>
+      <v-carousel v-bind="{ 'cycle': true }" interval="3000">
+        <v-carousel-item v-for="(post, index) in getPosts" :key="index" :src="post.imageUrl">
+          <h1 class="carousel-title">{{post.title}}</h1>
+        </v-carousel-item>
+      </v-carousel>
+    </v-flex>
   </v-container>
 </template>
 
@@ -47,3 +46,14 @@ export default {
   }
 };
 </script>
+
+<style lang="sass">
+.carousel-title
+  position: absolute
+  width: 100%
+  bottom: 50px
+  padding: 10px 16px 0 16px
+  background-color: rgba(black, 0.5)
+  color: white
+  text-align: center
+</style>

@@ -61,7 +61,9 @@
     <!-- app content -->
     <main>
       <v-container class="mt-4">
-        <router-view />
+        <transition name="fade"  mode="out-in">
+          <router-view />
+        </transition>
       </v-container>
     </main>
   </v-app>
@@ -94,4 +96,14 @@ export default {
 </script>
 
 <style lang="sass">
+.fade-enter-active,
+.fade-leave-active
+  transition: all 0.3s
+
+.fade-enter,
+.fade-leave-active
+  opacity: 0
+  transform: translate(-25px)
+
+
 </style>

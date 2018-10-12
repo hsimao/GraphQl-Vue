@@ -1,8 +1,8 @@
 <template>
-  <v-container v-if="getPosts">
+  <v-container v-if="posts.length > 0">
     <v-flex xs12>
       <v-carousel v-bind="{ 'cycle': true }" interval="3000">
-        <v-carousel-item v-for="(post, index) in getPosts" :key="index" :src="post.imageUrl">
+        <v-carousel-item v-for="post in posts" :key="post._id" :src="post.imageUrl">
           <h1 class="carousel-title">{{post.title}}</h1>
         </v-carousel-item>
       </v-carousel>
@@ -11,38 +11,21 @@
 </template>
 
 <script>
-import { gql } from "apollo-boost";
-
 export default {
   name: "Home",
-  data() {
-    return {
-      posts: []
-    };
-  },
-  apollo: {
-    getPosts: {
-      query: gql`
-        query {
-          getPosts {
-            title
-            imageUrl
-            description
-            likes
-          }
-        }
-      `,
-      // 回傳資訊，可回傳loading, data, 如要將資料傳到其他地方，例如vue 的data,可以在此操作
-      result(args) {
-        console.dir(args);
-        if (!args.loading) {
-          this.posts = args.data.getPosts;
-        }
-      },
-      error(err) {
-        console.log("Error", err);
-      }
+  computed: {
+    posts() {
+      return this.$store.getters.posts;
     }
+  },
+  methods: {
+    // 從vuex取得文章資訊, 傳遞給carousel組件
+    getPostData() {
+      this.$store.dispatch("getPost");
+    }
+  },
+  mounted() {
+    this.getPostData();
   }
 };
 </script>

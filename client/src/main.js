@@ -12,7 +12,7 @@ import VueApollo from "vue-apollo";
 Vue.use(VueApollo);
 
 // 設置Apollo
-const defaultClient = new ApolloClient({
+export const defaultClient = new ApolloClient({
   uri: "http://localhost:4000/graphql"
 });
 

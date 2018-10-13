@@ -23,7 +23,8 @@ export default new Vuex.Store({
     },
     setUser(state, payload) {
       state.user = payload;
-    }
+    },
+    clearUser: state => (state.user = null)
   },
   actions: {
     getPost({ commit }) {
@@ -73,6 +74,17 @@ export default new Vuex.Store({
           commit("setLoading", false);
           console.error(err);
         });
+    },
+    // 登出
+    signoutUser: async ({ commit }) => {
+      // 清空state user
+      commit("clearUser");
+      // 清空localStorage中的token
+      localStorage.setItem("token", "");
+      // 清空 session
+      await apolloClient.resetStore();
+      // 導回首頁
+      router.push("/");
     }
   },
   getters: {

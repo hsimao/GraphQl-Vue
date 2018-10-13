@@ -33,7 +33,7 @@
         </v-list-tile>
 
         <!-- 登出 -->
-        <v-list-tile v-if="user" to="/">
+        <v-list-tile v-if="user" @click="signout">
           <v-list-tile-action>
             <v-icon>exit_to_app</v-icon>
           </v-list-tile-action>
@@ -74,7 +74,7 @@
         </v-btn>
 
         <!-- 登出 -->
-        <v-btn v-if="user" flat>
+        <v-btn v-if="user" flat @click="signout">
           <v-icon class="hidden-sm-only" left>exit_to_app</v-icon>
           登出
         </v-btn>
@@ -127,6 +127,9 @@ export default {
   methods: {
     toggleSideNav() {
       this.sideNav = !this.sideNav;
+    },
+    signout() {
+      this.$store.dispatch("signoutUser");
     }
   }
 };

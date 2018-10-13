@@ -1,4 +1,11 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+// 創建Token 方法
+const createToken = (user, secret, expiresIn) => {
+  const { username, email } = user;
+  return jwt.sign({ username, email }, secret, { expiresIn });
+};
 
 module.exports = {
   Query: {
@@ -25,7 +32,7 @@ module.exports = {
         email,
         password
       }).save();
-      return newUser;
+      return { token: createToken(newUser, process.env.TOKEN_SECRET, "1h") };
     },
 
     signinUser: async (_, { username, password }, { User }) => {
@@ -38,7 +45,7 @@ module.exports = {
       if (!isValidPassword) {
         throw new Error("密碼錯誤，請重新輸入！");
       }
-      return user;
+      return { token: createToken(user, process.env.TOKEN_SECRET, "1h") };
     },
 
     addPost: async (_, { title, imageUrl, categories, description, creatorId }, { Post }) => {

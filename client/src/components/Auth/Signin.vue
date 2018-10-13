@@ -3,7 +3,7 @@
     <!-- title -->
     <v-layout row wrap>
       <v-flex xs12 sm6 offset-sm3>
-        <h1>歡迎回來！</h1>
+        <h1>登入</h1>
       </v-flex>
     </v-layout>
 

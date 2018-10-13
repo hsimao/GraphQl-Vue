@@ -44,6 +44,8 @@ export default new Vuex.Store({
     },
     // 登入，由後端驗證取得token
     signinUser({ commit }, payload) {
+      // 登入前先清空token, 避免error
+      localStorage.setItem("token", "");
       apolloClient
         .mutate({
           mutation: SIGNIN_USER,

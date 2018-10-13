@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import router from "./router";
 
 // 引入Apollo
 import { defaultClient as apolloClient } from "./main.js";
@@ -10,6 +11,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     posts: [],
+    user: null,
     loading: false
   },
   mutations: {
@@ -18,6 +20,9 @@ export default new Vuex.Store({
     },
     setLoading(state, payload) {
       state.loading = payload;
+    },
+    setUser(state, payload) {
+      state.user = payload;
     }
   },
   actions: {
@@ -45,12 +50,15 @@ export default new Vuex.Store({
         })
         .then(({ data }) => {
           localStorage.setItem("token", data.signinUser.token);
+          // 取得token後重新刷新，讓後端抓取以存放在headers上的token資訊來進行驗證
+          // 確保 getCurrentUser 方法有在main.js create階段中呼叫
+          router.go();
         })
         .catch(err => {
           console.error(err);
         });
     },
-    // 從後端驗證並取得當前用戶資料
+    // 取得當前用戶資料, 並儲存到state
     getCurrentUser: ({ commit }) => {
       commit("setLoading", true);
       apolloClient
@@ -59,7 +67,7 @@ export default new Vuex.Store({
         })
         .then(({ data }) => {
           commit("setLoading", false);
-          console.log(data.getCurrentUser);
+          commit("setUser", data.getCurrentUser);
         })
         .catch(err => {
           commit("setLoading", false);
@@ -69,6 +77,7 @@ export default new Vuex.Store({
   },
   getters: {
     posts: state => state.posts,
+    user: state => state.user,
     loading: state => state.loading
   }
 });

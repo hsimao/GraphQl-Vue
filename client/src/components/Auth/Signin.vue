@@ -42,6 +42,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   name: "Signin",
   data() {
@@ -49,6 +51,15 @@ export default {
       username: "",
       password: ""
     };
+  },
+  computed: {
+    ...mapGetters(["user"])
+  },
+  watch: {
+    user(value) {
+      // 監聽vuex中的user值,如果user值改變時(登入成功,從null變成物件),就將頁面倒到首頁
+      if (value) this.$router.push("/");
+    }
   },
   methods: {
     signinUser() {

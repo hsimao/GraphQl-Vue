@@ -1,7 +1,8 @@
-const { ApolloServer } = require("apollo-server");
+const { ApolloServer, AuthenticationError } = require("apollo-server");
 const mongoose = require("mongoose");
 const fs = require("fs");
 const path = require("path");
+const jwt = require("jsonwebtoken");
 
 // 引入GQL typeDefs跟resolvers
 const filePath = path.join(__dirname, "typeDefs.gql");
@@ -27,13 +28,26 @@ mongoose
   .then(() => console.log("DB connected"))
   .catch(err => console.error(err));
 
+// 驗證從client傳過來的token
+const getUser = async token => {
+  if (token) {
+    try {
+      let user = await jwt.verify(token, process.env.TOKEN_SECRET);
+      console.log(user);
+    } catch (err) {
+      throw new AuthenticationError("您的登入狀態已失效，請重新登入");
+      // console.error(err);
+    }
+  }
+};
+
 // 建立 Apollo / GraphQl Server, 使用typeDefs, resolvers, content物件
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: {
-    User,
-    Post
+  context: async ({ req }) => {
+    const token = req.headers["authorization"];
+    return { User, Post, currentUser: await getUser(token) };
   }
 });
 

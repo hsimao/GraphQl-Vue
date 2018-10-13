@@ -34,7 +34,7 @@ export default new Vuex.Store({
         })
         .catch(err => {
           console.log(err);
-          commit("setLoading", true);
+          commit("setLoading", false);
         });
     }
   },

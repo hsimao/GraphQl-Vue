@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+
 module.exports = {
   Query: {
     getPosts: async (_, args, { Post }) => {
@@ -24,6 +26,19 @@ module.exports = {
         password
       }).save();
       return newUser;
+    },
+
+    signinUser: async (_, { username, password }, { User }) => {
+      const user = await User.findOne({ username });
+      if (!user) {
+        throw new Error("無此帳號，請重新輸入！");
+      }
+
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword) {
+        throw new Error("密碼錯誤，請重新輸入！");
+      }
+      return user;
     },
 
     addPost: async (_, { title, imageUrl, categories, description, creatorId }, { Post }) => {

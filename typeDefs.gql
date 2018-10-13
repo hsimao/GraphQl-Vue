@@ -32,6 +32,7 @@ type Query {
 
 type Mutation {
   signupUser(username: String!, email: String!, password: String!): User!
+  signinUser(username: String!, password: String!): User!
   addPost(
     title: String!
     imageUrl: String!

@@ -51,5 +51,9 @@ new Vue({
   provide: apolloProvider,
   router,
   store,
-  render: h => h(App)
+  render: h => h(App),
+  created() {
+    // 調用Vuex 取得當前用戶資料
+    this.$store.dispatch("getCurrentUser");
+  }
 }).$mount("#app");

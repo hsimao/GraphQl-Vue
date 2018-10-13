@@ -32,8 +32,7 @@ mongoose
 const getUser = async token => {
   if (token) {
     try {
-      let user = await jwt.verify(token, process.env.TOKEN_SECRET);
-      console.log(user);
+      return await jwt.verify(token, process.env.TOKEN_SECRET);
     } catch (err) {
       throw new AuthenticationError("您的登入狀態已失效，請重新登入");
       // console.error(err);
@@ -46,6 +45,7 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: async ({ req }) => {
+    // 取得token, 調用getUser方法驗證token
     const token = req.headers["authorization"];
     return { User, Post, currentUser: await getUser(token) };
   }

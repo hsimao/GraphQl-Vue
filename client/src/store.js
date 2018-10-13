@@ -3,7 +3,7 @@ import Vuex from "vuex";
 
 // 引入Apollo
 import { defaultClient as apolloClient } from "./main.js";
-import { GET_POSTS, SIGNIN_USER } from "./queries";
+import { GET_POSTS, SIGNIN_USER, GET_CURRENT_USER } from "./queries";
 
 Vue.use(Vuex);
 
@@ -36,6 +36,7 @@ export default new Vuex.Store({
           commit("setLoading", false);
         });
     },
+    // 登入，由後端驗證取得token
     signinUser({ commit }, payload) {
       apolloClient
         .mutate({
@@ -46,6 +47,22 @@ export default new Vuex.Store({
           localStorage.setItem("token", data.signinUser.token);
         })
         .catch(err => {
+          console.error(err);
+        });
+    },
+    // 從後端驗證並取得當前用戶資料
+    getCurrentUser: ({ commit }) => {
+      commit("setLoading", true);
+      apolloClient
+        .query({
+          query: GET_CURRENT_USER
+        })
+        .then(({ data }) => {
+          commit("setLoading", false);
+          console.log(data.getCurrentUser);
+        })
+        .catch(err => {
+          commit("setLoading", false);
           console.error(err);
         });
     }

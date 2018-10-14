@@ -5,6 +5,10 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 
+// 引入Alert組件，並註冊全域
+import FormAlert from "./components/Shared/FormAlert";
+Vue.component("form-alert", FormAlert);
+
 // 引入 Apollo
 import ApolloClient from "apollo-boost";
 import VueApollo from "vue-apollo";

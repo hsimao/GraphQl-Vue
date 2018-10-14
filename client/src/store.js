@@ -4,7 +4,7 @@ import router from "./router";
 
 // 引入Apollo
 import { defaultClient as apolloClient } from "./main.js";
-import { GET_POSTS, SIGNIN_USER, SIGNUP_USER, GET_CURRENT_USER } from "./queries";
+import { GET_POSTS, SIGNIN_USER, SIGNUP_USER, GET_CURRENT_USER, ADD_POST } from "./queries";
 
 Vue.use(Vuex);
 
@@ -121,6 +121,20 @@ export default new Vuex.Store({
       await apolloClient.resetStore();
       // 導回首頁
       router.push("/");
+    },
+    // 新增文章
+    addPost: ({ commit }, payload) => {
+      apolloClient
+        .mutate({
+          mutation: ADD_POST,
+          variables: payload
+        })
+        .then(({ data }) => {
+          console.log(data.addPost);
+        })
+        .catch(err => {
+          console.error(err);
+        });
     }
   },
   getters: {

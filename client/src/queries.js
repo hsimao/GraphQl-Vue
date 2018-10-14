@@ -1,5 +1,8 @@
 import { gql } from "apollo-boost";
 
+// ===========
+// query Start
+
 // 取得文章資料
 export const GET_POSTS = gql`
   query {
@@ -30,6 +33,12 @@ export const GET_CURRENT_USER = gql`
   }
 `;
 
+// Query End
+// =========
+
+// ==============
+// Mutation Start
+
 // user signin 用戶登入, 調用後端Apollo方法：signinUser驗證帳密，若符合回傳token
 export const SIGNIN_USER = gql`
   mutation($username: String!, $password: String!) {
@@ -47,3 +56,32 @@ export const SIGNUP_USER = gql`
     }
   }
 `;
+
+// add post新增文章
+export const ADD_POST = gql`
+  mutation(
+    $title: String!
+    $imageUrl: String!
+    $categories: [String]!
+    $description: String!
+    $creatorId: ID!
+  ) {
+    addPost(
+      title: $title
+      imageUrl: $imageUrl
+      categories: $categories
+      description: $description
+      creatorId: $creatorId
+    ) {
+      _id
+      title
+      imageUrl
+      categories
+      description
+      createdDate
+    }
+  }
+`;
+
+// Mutation End
+// ============

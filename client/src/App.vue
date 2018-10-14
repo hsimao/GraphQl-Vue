@@ -89,6 +89,14 @@
         <transition name="fade" mode="out-in">
           <router-view />
         </transition>
+
+        <!-- 登入提示窗 Snackbar -->
+        <v-snackbar v-model="authSnackbar" color="success" :timeout="5000" bottom left>
+          <v-icon class="mr-3">check</v-icon>
+          <h3>{{authSnackbarTitle}}</h3>
+          <v-btn flat @click="authSnackbar = false">關閉</v-btn>
+        </v-snackbar>
+
       </v-container>
     </main>
   </v-app>
@@ -102,8 +110,23 @@ export default {
   data() {
     return {
       sideNav: false,
-      appTitle: "VueShare"
+      appTitle: "VueShare",
+      authSnackbar: false,
+      authSnackbarTitle: ""
     };
+  },
+  watch: {
+    // 監聽會員資料，依照改變狀況給予不同提示訊息
+    user(newValue, oldValue) {
+      if (newValue) {
+        this.authSnackbarTitle = `${newValue.username} 登入成功！`;
+        this.authSnackbar = true;
+      }
+      if (oldValue) {
+        this.authSnackbarTitle = `${oldValue.username} 已經登出！`;
+        this.authSnackbar = true;
+      }
+    }
   },
   computed: {
     ...mapGetters(["user"]),

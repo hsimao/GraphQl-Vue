@@ -19,22 +19,22 @@
       <v-flex xs12 sm6 offset-sm3>
         <v-card color="secondary" dark>
           <v-container>
-            <v-form @submit.prevent="signinUser">
+            <v-form v-model="isFormValid" lazy-validation ref="form" @submit.prevent="signinUser">
               <v-layout row>
                 <v-flex xs12>
-                  <v-text-field v-model="username" prepend-icon="face" label="Username" type="text" required>
+                  <v-text-field :rules="usernameRules" v-model="username" prepend-icon="face" label="Username" type="text" required>
                   </v-text-field>
                 </v-flex>
               </v-layout>
               <v-layout row>
                 <v-flex xs12>
-                  <v-text-field v-model="password" prepend-icon="extension" label="Password" type="password" required>
+                  <v-text-field :rules="passwordRules" v-model="password" prepend-icon="extension" label="Password" type="password" required>
                   </v-text-field>
                 </v-flex>
               </v-layout>
               <v-layout row>
                 <v-flex xs12>
-                  <v-btn :loading="loading" color="primary" type="submit">登入</v-btn>
+                  <v-btn :loading="loading" color="primary" type="submit" :disabled="!isFormValid">登入</v-btn>
                   <h3>還沒有帳號？
                     <router-link to="/signup">註冊</router-link>
                   </h3>
@@ -55,8 +55,18 @@ export default {
   name: "Signin",
   data() {
     return {
+      isFormValid: true,
       username: "",
-      password: ""
+      password: "",
+      // 命名欄位輸入驗證規則
+      usernameRules: [
+        username => !!username || "姓名為必填欄位",
+        username => username.length < 10 || "姓名不得大於10字元"
+      ],
+      passwordRules: [
+        password => !!password || "密碼為必填欄位",
+        password => password.length >= 4 || "密碼須大於4字元"
+      ]
     };
   },
   computed: {
@@ -70,10 +80,13 @@ export default {
   },
   methods: {
     signinUser() {
-      this.$store.dispatch("signinUser", {
-        username: this.username,
-        password: this.password
-      });
+      // 若在input都尚未觸發前直接點擊送出, 在此判斷表單驗證
+      if (this.$refs.form.validate()) {
+        this.$store.dispatch("signinUser", {
+          username: this.username,
+          password: this.password
+        });
+      }
     }
   }
 };

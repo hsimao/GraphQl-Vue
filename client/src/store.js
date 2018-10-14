@@ -4,7 +4,7 @@ import router from "./router";
 
 // 引入Apollo
 import { defaultClient as apolloClient } from "./main.js";
-import { GET_POSTS, SIGNIN_USER, GET_CURRENT_USER } from "./queries";
+import { GET_POSTS, SIGNIN_USER, SIGNUP_USER, GET_CURRENT_USER } from "./queries";
 
 Vue.use(Vuex);
 
@@ -55,8 +55,6 @@ export default new Vuex.Store({
     signinUser({ commit }, payload) {
       commit("setLoading", true);
       commit("clearError");
-      // 登入前先清空token, 避免error
-      localStorage.setItem("token", "");
       apolloClient
         .mutate({
           mutation: SIGNIN_USER,
@@ -65,6 +63,28 @@ export default new Vuex.Store({
         .then(({ data }) => {
           commit("setLoading", false);
           localStorage.setItem("token", data.signinUser.token);
+          // 取得token後重新刷新，讓後端抓取以存放在headers上的token資訊來進行驗證
+          // 確保 getCurrentUser 方法有在main.js create階段中呼叫
+          router.go();
+        })
+        .catch(err => {
+          commit("setLoading", false);
+          commit("setError", err);
+          console.error(err);
+        });
+    },
+    // 註冊
+    signupUser({ commit }, payload) {
+      commit("setLoading", true);
+      commit("clearError");
+      apolloClient
+        .mutate({
+          mutation: SIGNUP_USER,
+          variables: payload
+        })
+        .then(({ data }) => {
+          commit("setLoading", false);
+          localStorage.setItem("token", data.signupUser.token);
           // 取得token後重新刷新，讓後端抓取以存放在headers上的token資訊來進行驗證
           // 確保 getCurrentUser 方法有在main.js create階段中呼叫
           router.go();

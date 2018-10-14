@@ -34,7 +34,7 @@
               </v-layout>
               <v-layout row>
                 <v-flex xs12>
-                  <v-btn :loading="loading" color="primary" type="submit" :disabled="!isFormValid">登入</v-btn>
+                  <v-btn :loading="loading" color="primary" type="submit" :disabled="!isFormValid || loading">登入</v-btn>
                   <h3>還沒有帳號？
                     <router-link to="/signup">註冊</router-link>
                   </h3>

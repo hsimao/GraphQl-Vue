@@ -126,6 +126,7 @@ export default {
   watch: {
     // 監聽會員資料，依照改變狀況給予不同提示訊息
     user(newValue, oldValue) {
+      this.authSnackbar = false;
       if (newValue) {
         this.authSnackbarTitle = `${newValue.username} 已登入！`;
         this.authSnackbar = true;

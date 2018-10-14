@@ -97,6 +97,13 @@
           <v-btn flat @click="authSnackbar = false">關閉</v-btn>
         </v-snackbar>
 
+        <!-- auth錯誤提示窗 Snackbar -->
+        <v-snackbar v-if="authError" v-model="authErrorSnackbar" color="error" :timeout="10000" bottom left>
+          <v-icon class="mr-3">cancel</v-icon>
+          <h3>{{authError.message}}</h3>
+          <v-btn flat to="/signin">登入</v-btn>
+        </v-snackbar>
+
       </v-container>
     </main>
   </v-app>
@@ -112,24 +119,31 @@ export default {
       sideNav: false,
       appTitle: "VueShare",
       authSnackbar: false,
-      authSnackbarTitle: ""
+      authSnackbarTitle: "",
+      authErrorSnackbar: false
     };
   },
   watch: {
     // 監聽會員資料，依照改變狀況給予不同提示訊息
     user(newValue, oldValue) {
       if (newValue) {
-        this.authSnackbarTitle = `${newValue.username} 登入成功！`;
+        this.authSnackbarTitle = `${newValue.username} 已登入！`;
         this.authSnackbar = true;
       }
       if (oldValue) {
         this.authSnackbarTitle = `${oldValue.username} 已經登出！`;
         this.authSnackbar = true;
       }
+    },
+    // 監聽驗證錯誤訊息，如果有訊息就調用auth錯誤提示窗
+    authError(value) {
+      if (value !== null) {
+        this.authErrorSnackbar = true;
+      }
     }
   },
   computed: {
-    ...mapGetters(["user"]),
+    ...mapGetters(["authError", "user"]),
     navItems() {
       let items = [
         { icon: "chat", title: "文章", link: "/posts" },
@@ -141,7 +155,6 @@ export default {
         items = [
           { icon: "chat", title: "文章", link: "/posts" },
           { icon: "stars", title: "新增", link: "/post/add" }
-          // { icon: "account_box", title: "帳號", link: "/profile" }
         ];
       }
       return items;

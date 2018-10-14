@@ -42,6 +42,14 @@ export const defaultClient = new ApolloClient({
     if (graphQLErrors) {
       for (let err of graphQLErrors) {
         console.dir(err);
+
+        // 如果是驗證錯誤(例如token期限到期), 更新提示訊息, 並觸發登出方法來清空舊狀態
+        if (err.name === "AuthenticationError") {
+          // 設定驗證錯誤訊息到state, 來顯示提窗
+          store.commit("setAuthError", err);
+          // 調用登出方法,清空舊狀態
+          store.dispatch("signoutUser");
+        }
       }
     }
   }

@@ -44,6 +44,11 @@ const getUser = async token => {
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  // 格式化錯誤訊息
+  formatError: error => ({
+    name: error.name,
+    message: error.message.replace("Context creation failed: ", "")
+  }),
   context: async ({ req }) => {
     // 取得token, 調用getUser方法驗證token
     const token = req.headers["authorization"];

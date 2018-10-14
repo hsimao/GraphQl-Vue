@@ -34,7 +34,7 @@
               </v-layout>
               <v-layout row>
                 <v-flex xs12>
-                  <v-btn color="primary" type="submit">登入</v-btn>
+                  <v-btn :loading="loading" color="primary" type="submit">登入</v-btn>
                   <h3>還沒有帳號？
                     <router-link to="/signup">註冊</router-link>
                   </h3>
@@ -60,7 +60,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["user", "error"])
+    ...mapGetters(["user", "loading", "error"])
   },
   watch: {
     user(value) {
@@ -78,3 +78,43 @@ export default {
   }
 };
 </script>
+
+<style>
+/* btn loader style */
+.custom-loader {
+  animation: loader 1s infinite;
+  display: flex;
+}
+@-moz-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes loader {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>

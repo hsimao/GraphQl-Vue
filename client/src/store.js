@@ -49,6 +49,7 @@ export default new Vuex.Store({
     },
     // 登入，由後端驗證取得token
     signinUser({ commit }, payload) {
+      commit("setLoading", true);
       commit("clearError");
       // 登入前先清空token, 避免error
       localStorage.setItem("token", "");
@@ -58,12 +59,14 @@ export default new Vuex.Store({
           variables: payload
         })
         .then(({ data }) => {
+          commit("setLoading", false);
           localStorage.setItem("token", data.signinUser.token);
           // 取得token後重新刷新，讓後端抓取以存放在headers上的token資訊來進行驗證
           // 確保 getCurrentUser 方法有在main.js create階段中呼叫
           router.go();
         })
         .catch(err => {
+          commit("setLoading", false);
           commit("setError", err);
           console.error(err);
         });

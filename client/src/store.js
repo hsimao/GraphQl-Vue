@@ -127,7 +127,29 @@ export default new Vuex.Store({
       apolloClient
         .mutate({
           mutation: ADD_POST,
-          variables: payload
+          variables: payload,
+          // 更新 Aopplo post資料
+          update: (cache, { data: { addPost } }) => {
+            // 取得當前get_post內的資料
+            const data = cache.readQuery({ query: GET_POSTS });
+            // 將本次新增的文章新增到此資料內(unshift: 新增到最前面)
+            data.getPosts.unshift(addPost);
+            console.log(data);
+            // 將更新完的資料寫入query
+            cache.writeQuery({
+              query: GET_POSTS,
+              data
+            });
+          },
+          // 觸發更新UI,opitmisticRespones可確保更新時立即添加數據
+          opitmisticRespones: {
+            __typename: "Mutation",
+            addPost: {
+              __typename: "Post",
+              _id: -1,
+              ...payload
+            }
+          }
         })
         .then(({ data }) => {
           console.log(data.addPost);

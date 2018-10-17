@@ -30,6 +30,33 @@ module.exports = {
           model: "User"
         });
       return posts;
+    },
+    // 文章列表 (載入更多功能)
+    infiniteScrollPosts: async (_, { pageNum, pageSize }, { Post }) => {
+      let posts;
+      if (pageNum === 1) {
+        posts = await Post.find({})
+          .sort({ createdDate: "desc" })
+          .populate({
+            path: "createdBy",
+            model: "User"
+          })
+          .limit(pageSize);
+      } else {
+        // 如果頁碼大於1(非第一次讀取), 則計算後面接續要抓出的文章資料
+        const skips = pageSize * (pageNum - 1);
+        posts = await Post.find({})
+          .sort({ createdDate: "desc" })
+          .populate({
+            path: "createdBy",
+            model: "User"
+          })
+          .skip(skips)
+          .limit(pageSize);
+      }
+      const totalDocs = await Post.countDocuments();
+      const hasMore = totalDocs > pageSize * pageNum;
+      return { posts, hasMore };
     }
   },
 

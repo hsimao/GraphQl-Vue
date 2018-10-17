@@ -21,14 +21,21 @@ type Post {
 }
 
 type Message {
+  _id: ID
   messageBody: String!
   messageDate: String
   messageUser: User!
 }
 
+type PostsPage {
+  posts: [Post]
+  hasMore: Boolean
+}
+
 type Query {
   getCurrentUser: User
   getPosts: [Post]
+  infiniteScrollPosts(pageNum: Int!, pageSize: Int!): PostsPage
 }
 
 type Token {

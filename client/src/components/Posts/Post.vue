@@ -1,14 +1,26 @@
 <template>
-  <div>
-    <h1>{{postId}}</h1>
-  </div>
+  <v-container v-if="getPost">
+    <h1>{{getPost.title}}</h1>
+  </v-container>
 </template>
 
 <script>
+import { GET_POST } from "../../queries";
+
 export default {
   name: "Post",
   props: {
     postId: String
+  },
+  apollo: {
+    getPost: {
+      query: GET_POST,
+      variables() {
+        return {
+          postId: this.postId
+        };
+      }
+    }
   }
 };
 </script>

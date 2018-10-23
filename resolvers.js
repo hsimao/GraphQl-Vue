@@ -21,6 +21,14 @@ module.exports = {
       });
       return user;
     },
+    // 取得單筆文章資料
+    getPost: async (_, { postId }, { Post }) => {
+      const post = await Post.findOne({ _id: postId }).populate({
+        path: "messages.messageUser",
+        model: "User"
+      });
+      return post;
+    },
     getPosts: async (_, args, { Post }) => {
       const posts = await Post.find({})
         .sort({ createdDate: "desc" }) // 依照創建日期排序

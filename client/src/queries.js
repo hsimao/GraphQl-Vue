@@ -3,13 +3,38 @@ import { gql } from "apollo-boost";
 // ===========
 // query Start
 
-// 取得文章資料
+// 取得文章列表資料
 export const GET_POSTS = gql`
   query {
     getPosts {
       _id
       title
       imageUrl
+    }
+  }
+`;
+
+// 取得單筆文章詳細資料
+export const GET_POST = gql`
+  query($postId: ID!) {
+    getPost(postId: $postId) {
+      _id
+      title
+      imageUrl
+      description
+      categories
+      likes
+      createdDate
+      messages {
+        _id
+        messageBody
+        messageDate
+        messageUser {
+          _id
+          username
+          avatar
+        }
+      }
     }
   }
 `;

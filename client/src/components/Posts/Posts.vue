@@ -5,7 +5,7 @@
     <v-layout row wrap v-if="infiniteScrollPosts">
       <v-flex xs12 sm6 v-for="post in infiniteScrollPosts.posts" :key="post._id">
 
-        <v-card hover>
+        <v-card hover @click.native="goToPost(post._id)">
           <v-img :src="post.imageUrl" height="30vh" lazy></v-img>
 
           <!-- 文章標題、喜歡次數、留言次數 -->
@@ -17,7 +17,7 @@
               </div>
             </v-card-title>
             <v-spacer></v-spacer>
-            <v-btn @click="showPostCreator = !showPostCreator" icon>
+            <v-btn @click.stop="showPostCreator = !showPostCreator" icon>
               <v-icon>{{`keyboard_arrow_${showPostCreator ? 'up' : 'down'}`}}</v-icon>
             </v-btn>
           </v-card-actions>
@@ -88,6 +88,9 @@ export default {
     }
   },
   methods: {
+    goToPost(id) {
+      this.$router.push(`/posts/${id}`);
+    },
     // 抓取更多文章資訊，並更新資料
     showMorePosts() {
       this.pageNum += 1;

@@ -14,7 +14,7 @@
 
     <v-flex xs12>
       <v-carousel v-if="!loading && posts.length > 0" v-bind="{ 'cycle': true }" interval="3000">
-        <v-carousel-item v-for="post in posts" :key="post._id" :lazy-src="post.imageUrl" :src="post.imageUrl">
+        <v-carousel-item @click.native="goToPost(post._id)" v-for="post in posts" :key="post._id" :lazy-src="post.imageUrl" :src="post.imageUrl">
           <h1 class="carousel-title">{{post.title}}</h1>
         </v-carousel-item>
       </v-carousel>
@@ -35,6 +35,9 @@ export default {
     // 從vuex取得文章資訊, 傳遞給carousel組件
     getPostData() {
       this.$store.dispatch("getPost");
+    },
+    goToPost(id) {
+      this.$router.push(`/posts/${id}`);
     }
   },
   mounted() {

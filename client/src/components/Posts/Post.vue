@@ -26,7 +26,7 @@
           <!-- 大圖彈窗 -->
           <v-dialog v-model="dialog">
             <v-card>
-              <v-img :src="getPost.imageUrl" height="80vh"></v-img>
+              <v-img :src="getPost.imageUrl" height="80vh" @click="dialog = !dialog"></v-img>
             </v-card>
           </v-dialog>
 
@@ -41,6 +41,54 @@
         </v-card>
       </v-flex>
     </v-layout>
+
+    <!-- 留言輸入框 -->
+    <v-layout class="md-3" v-if="user">
+      <v-flex xs12>
+        <v-form>
+          <v-layout row>
+            <v-flex xs12>
+              <v-text-field clearable append-outer-icon="send" label="新增留言" type="text" prepend-icon="email" required></v-text-field>
+            </v-flex>
+          </v-layout>
+        </v-form>
+      </v-flex>
+    </v-layout>
+
+    <!-- 留言列表 -->
+    <v-layout row wrap>
+      <v-flex xs12>
+        <v-list subheader two-line>
+          <v-subheader>留言 ({{getPost.messages.length}})</v-subheader>
+
+          <template v-for="message in getPost.messages">
+            <v-divider :key="message._id"></v-divider>
+
+            <v-list-tile avatar inset :key="message.title">
+              <v-list-tile-avatar>
+                <img :src="message.messageUser.avatar">
+              </v-list-tile-avatar>
+
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  {{message.messageBody}}
+                </v-list-tile-title>
+                <v-list-tile-sub-title>
+                  {{message.messageUser.username}}
+                  <span class="grey--text text--lighten-1 hidden-xs-only">{{message.messageDate}}</span>
+                </v-list-tile-sub-title>
+              </v-list-tile-content>
+
+              <v-list-tile-action class="hidden-xs-only">
+                <v-icon color="grey">chat_bubble</v-icon>
+              </v-list-tile-action>
+
+            </v-list-tile>
+          </template>
+        </v-list>
+      </v-flex>
+    </v-layout>
+
   </v-container>
 </template>
 

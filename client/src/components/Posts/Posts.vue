@@ -66,7 +66,7 @@
 import { INFINITE_SCROLL_POSTS } from "../../queries";
 
 // 每次載入的文章數量
-const pageSize = 2;
+const pageSize = 4;
 
 export default {
   name: "Posts",

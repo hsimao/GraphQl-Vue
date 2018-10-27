@@ -105,6 +105,25 @@ module.exports = {
         createdBy: creatorId
       }).save();
       return newPost;
+    },
+
+    addPostMessage: async (_, { messageBody, userId, postId }, { Post }) => {
+      const newMessage = {
+        messageBody,
+        messageUser: userId
+      };
+      const post = await Post.findOneAndUpdate(
+        // 使用postId找到該篇文章
+        { _id: postId },
+        // 將新的留言新增到到message陣列最前面
+        { $push: { messages: { $each: [newMessage], $position: 0 } } },
+        // 新增完後回傳
+        { new: true }
+      ).populate({
+        path: "messages.messageUser",
+        model: "User"
+      });
+      return post.messages[0];
     }
   }
 };

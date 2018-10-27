@@ -45,10 +45,10 @@
     <!-- 留言輸入框 -->
     <v-layout class="md-3" v-if="user">
       <v-flex xs12>
-        <v-form>
+        <v-form @submit.prevent="addMessage">
           <v-layout row>
             <v-flex xs12>
-              <v-text-field clearable append-outer-icon="send" label="新增留言" type="text" prepend-icon="email" required></v-text-field>
+              <v-text-field @click:append-outer="addMessage" v-model="messageBody" clearable :append-outer-icon="messageBody && 'send'" label="新增留言" type="text" prepend-icon="email" required></v-text-field>
             </v-flex>
           </v-layout>
         </v-form>
@@ -94,7 +94,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { GET_POST } from "../../queries";
+import { GET_POST, ADD_POST_MESSAGE } from "../../queries";
 
 export default {
   name: "Post",
@@ -103,7 +103,8 @@ export default {
   },
   data() {
     return {
-      dialog: false
+      dialog: false,
+      messageBody: ""
     };
   },
   apollo: {
@@ -127,6 +128,38 @@ export default {
       if (window.innerWidth > 500) {
         this.dialog = !this.dialog;
       }
+    },
+    addMessage() {
+      const variables = {
+        messageBody: this.messageBody,
+        userId: this.user._id,
+        postId: this.postId
+      };
+      // 呼叫queries內的ADD_POST_MESSAGE方法
+      this.$apollo
+        .mutate({
+          mutation: ADD_POST_MESSAGE,
+          variables,
+          // 新增完後同步當前留言資料
+          update: (cache, { data: { addPostMessage } }) => {
+            const data = cache.readQuery({
+              query: GET_POST,
+              variables: { postId: this.postId }
+            });
+            // 將新增的留言push到最前面
+            data.getPost.messages.unshift(addPostMessage);
+            cache.writeQuery({
+              query: GET_POST,
+              variables: { postId: this.postId },
+              data
+            });
+          }
+        })
+        .then(({ data }) => {
+          this.messageBody = "";
+          console.log(data.addPostMessage);
+        })
+        .catch(err => console.error(err));
     }
   }
 };

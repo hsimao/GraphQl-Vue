@@ -90,6 +90,22 @@ export const INFINITE_SCROLL_POSTS = gql`
 // ==============
 // Mutation Start
 
+// 新增留言
+export const ADD_POST_MESSAGE = gql`
+  mutation($messageBody: String!, $userId: ID!, $postId: ID!) {
+    addPostMessage(messageBody: $messageBody, userId: $userId, postId: $postId) {
+      _id
+      messageBody
+      messageDate
+      messageUser {
+        _id
+        username
+        avatar
+      }
+    }
+  }
+`;
+
 // user signin 用戶登入, 調用後端Apollo方法：signinUser驗證帳密，若符合回傳token
 export const SIGNIN_USER = gql`
   mutation($username: String!, $password: String!) {

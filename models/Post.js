@@ -53,4 +53,9 @@ const PostSchema = new mongoose.Schema({
   ]
 });
 
+// 創建index來搜索文章資料內所有的字串
+PostSchema.index({
+  "$**": "text"
+});
+
 module.exports = mongoose.model("Post", PostSchema);

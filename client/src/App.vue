@@ -71,11 +71,34 @@
 
       <!-- Search Input -->
       <v-text-field flex
+                    v-model="searchTerm"
+                    @input="searchPosts"
                     prepend-icon="search"
                     placeholder="Search posts"
                     color="secondary"
                     single-line
                     hide-details></v-text-field>
+
+      <!-- 搜尋結果列表 Search results list -->
+      <v-card dark
+              v-if="searchResults.length"
+              id="card__search">
+        <v-list>
+          <v-list-tile v-for="result in searchResults"
+                       :key="result._id"
+                       @click="goToSearchPost(result._id)">
+            <v-list-tile-title>
+              {{result.title}}
+              <span class="font-weight-thin">{{formatDesc(result.description)}}</span>
+            </v-list-tile-title>
+
+            <v-list-tile-action v-if="checkIfUserFavorite(result._id)">
+              <v-icon>favorite</v-icon>
+            </v-list-tile-action>
+
+          </v-list-tile>
+        </v-list>
+      </v-card>
 
       <v-spacer></v-spacer>
 
@@ -163,6 +186,7 @@ export default {
   name: "App",
   data() {
     return {
+      searchTerm: "",
       sideNav: false,
       appTitle: "VueShare",
       authSnackbar: false,
@@ -202,7 +226,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["authError", "user", "userFavorites"]),
+    ...mapGetters(["searchResults", "authError", "user", "userFavorites"]),
     navItems() {
       let items = [
         { icon: "chat", title: "文章", link: "/posts" },
@@ -225,6 +249,25 @@ export default {
     },
     signout() {
       this.$store.dispatch("signoutUser");
+    },
+    searchPosts() {
+      // 搜尋文章，將結果存到vuex
+      this.$store.dispatch("searchPosts", {
+        searchTerm: this.searchTerm
+      });
+    },
+    goToSearchPost(postId) {
+      this.searchTerm = "";
+      this.$store.commit("clearSearchResults");
+      this.$router.push(`/posts/${postId}`);
+    },
+    // 搜尋結果描述文字長度限制
+    formatDesc(desc) {
+      return desc.length > 50 ? `${desc.slice(0, 50)}...` : desc;
+    },
+    // 檢查此篇結果文章是否有加入我得最愛
+    checkIfUserFavorite(resultId) {
+      return this.userFavorites && this.userFavorites.some(fave => fave._id === resultId);
     }
   }
 };
@@ -256,4 +299,11 @@ export default {
   90%
     transform: translate3d(0, -4px, 0)
 
+// 搜尋結果列表樣式
+#card__search
+  position: absolute
+  width: 100vw
+  z-index: 8
+  top: 100%
+  left: 0%
 </style>

@@ -84,6 +84,19 @@ export const INFINITE_SCROLL_POSTS = gql`
   }
 `;
 
+// 文章搜尋
+export const SEARCH_POSTS = gql`
+  query($searchTerm: String) {
+    searchPosts(searchTerm: $searchTerm) {
+      _id
+      title
+      description
+      imageUrl
+      likes
+    }
+  }
+`;
+
 // Query End
 // =========
 

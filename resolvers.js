@@ -39,6 +39,26 @@ module.exports = {
         });
       return posts;
     },
+    // 文章搜尋功能
+    searchPosts: async (_, { searchTerm }, { Post }) => {
+      if (searchTerm) {
+        const searchResults = await Post.find(
+          // Perform text search for search value of 'searchterm'
+          // 對'searchterm'參數進行搜索
+          { $text: { $search: searchTerm } },
+          // assign ' searchTerm' a text score to  provide best match
+          // 為'searchTerm'指定文本分數以提供最佳匹配
+          { score: { $meta: "textScore" } }
+        )
+          .sort({
+            // 根據textScore（以及喜歡的文章）對結果進行排序
+            score: { $meta: "textScore" },
+            likes: "desc"
+          })
+          .limit(5);
+        return searchResults;
+      }
+    },
     // 文章列表 (載入更多功能)
     infiniteScrollPosts: async (_, { pageNum, pageSize }, { Post }) => {
       let posts;

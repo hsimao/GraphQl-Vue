@@ -4,13 +4,21 @@ import router from "./router";
 
 // 引入Apollo
 import { defaultClient as apolloClient } from "./main.js";
-import { GET_POSTS, SIGNIN_USER, SIGNUP_USER, GET_CURRENT_USER, ADD_POST } from "./queries";
+import {
+  GET_POSTS,
+  SIGNIN_USER,
+  SIGNUP_USER,
+  GET_CURRENT_USER,
+  ADD_POST,
+  SEARCH_POSTS
+} from "./queries";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     posts: [],
+    searchResults: [],
     user: null,
     loading: false,
     error: null,
@@ -19,6 +27,11 @@ export default new Vuex.Store({
   mutations: {
     setPosts(state, payload) {
       state.posts = payload;
+    },
+    setSearchResults(state, payload) {
+      if (payload !== null) {
+        state.searchResults = payload;
+      }
     },
     setLoading(state, payload) {
       state.loading = payload;
@@ -33,7 +46,8 @@ export default new Vuex.Store({
       state.authError = payload;
     },
     clearUser: state => (state.user = null),
-    clearError: state => (state.error = null)
+    clearError: state => (state.error = null),
+    clearSearchResults: state => (state.searchResults = [])
   },
   actions: {
     getPost({ commit }) {
@@ -157,10 +171,24 @@ export default new Vuex.Store({
         .catch(err => {
           console.error(err);
         });
+    },
+    // 搜尋文章
+    searchPosts: ({ commit }, payload) => {
+      apolloClient
+        .query({
+          query: SEARCH_POSTS,
+          variables: payload
+        })
+        .then(({ data }) => {
+          console.log(data.searchPosts);
+          commit("setSearchResults", data.searchPosts);
+        })
+        .catch(err => console.error(err));
     }
   },
   getters: {
     posts: state => state.posts,
+    searchResults: state => state.searchResults,
     user: state => state.user,
     userFavorites: state => state.user && state.user.favorites,
     loading: state => state.loading,

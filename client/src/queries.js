@@ -39,6 +39,21 @@ export const GET_POST = gql`
   }
 `;
 
+// 取得用戶自己建立的文章
+export const GET_USER_POSTS = gql`
+  query($userId: ID!) {
+    getUserPosts(userId: $userId) {
+      _id
+      title
+      imageUrl
+      description
+      categories
+      createdDate
+      likes
+    }
+  }
+`;
+
 // user queries 查詢用戶資料
 export const GET_CURRENT_USER = gql`
   query {

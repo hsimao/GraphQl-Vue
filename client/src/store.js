@@ -6,6 +6,7 @@ import router from "./router";
 import { defaultClient as apolloClient } from "./main.js";
 import {
   GET_POSTS,
+  GET_USER_POSTS,
   SIGNIN_USER,
   SIGNUP_USER,
   GET_CURRENT_USER,
@@ -18,6 +19,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     posts: [],
+    userPosts: [],
     searchResults: [],
     user: null,
     loading: false,
@@ -27,6 +29,9 @@ export default new Vuex.Store({
   mutations: {
     setPosts(state, payload) {
       state.posts = payload;
+    },
+    setUserPosts(state, payload) {
+      state.userPosts = payload;
     },
     setSearchResults(state, payload) {
       if (payload !== null) {
@@ -64,6 +69,19 @@ export default new Vuex.Store({
           console.log(err);
           commit("setLoading", false);
         });
+    },
+    // 取得用戶建立的文章
+    getUserPosts: ({ commit }, payload) => {
+      apolloClient
+        .query({
+          query: GET_USER_POSTS,
+          variables: payload
+        })
+        .then(({ data }) => {
+          commit("setUserPosts", data.getUserPosts);
+          console.log(data.getUserPosts);
+        })
+        .catch(err => console.error(err));
     },
     // 登入，由後端驗證取得token
     signinUser({ commit }, payload) {
@@ -188,6 +206,7 @@ export default new Vuex.Store({
   },
   getters: {
     posts: state => state.posts,
+    userPosts: state => state.userPosts,
     searchResults: state => state.searchResults,
     user: state => state.user,
     userFavorites: state => state.user && state.user.favorites,

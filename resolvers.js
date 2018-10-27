@@ -21,6 +21,13 @@ module.exports = {
       });
       return user;
     },
+    // 取得用戶自己建立的文章
+    getUserPosts: async (_, { userId }, { Post }) => {
+      const posts = await Post.find({
+        createdBy: userId
+      });
+      return posts;
+    },
     // 取得單筆文章資料
     getPost: async (_, { postId }, { Post }) => {
       const post = await Post.findOne({ _id: postId }).populate({

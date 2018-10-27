@@ -124,6 +124,48 @@ module.exports = {
         model: "User"
       });
       return post.messages[0];
+    },
+
+    // 新增like文章
+    likePost: async (_, { postId, username }, { Post, User }) => {
+      // 找到文章，找到like value 添加1
+      const post = await Post.findOneAndUpdate(
+        { _id: postId },
+        { $inc: { likes: 1 } },
+        { new: true }
+      );
+
+      // 找到用戶，新增文章資訊到我的最愛
+      const user = await User.findOneAndUpdate(
+        { username },
+        { $addToSet: { favorites: postId } },
+        { new: true }
+      ).populate({
+        path: "favorites",
+        model: "Post"
+      });
+      return { likes: post.likes, favorites: user.favorites };
+    },
+
+    // 取消like文章
+    unlikePost: async (_, { postId, username }, { Post, User }) => {
+      // 找到文章，找到like value -1
+      const post = await Post.findOneAndUpdate(
+        { _id: postId },
+        { $inc: { likes: -1 } },
+        { new: true }
+      );
+
+      // 找到用戶，我的最愛刪除此文章
+      const user = await User.findOneAndUpdate(
+        { username },
+        { $pull: { favorites: postId } },
+        { new: true }
+      ).populate({
+        path: "favorites",
+        model: "Post"
+      });
+      return { likes: post.likes, favorites: user.favorites };
     }
   }
 };

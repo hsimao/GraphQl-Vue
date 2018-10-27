@@ -15,9 +15,10 @@
             <!-- 新增我的最愛按鈕, 有登入才顯示 -->
             <v-btn large
                    icon
-                   v-if="user">
+                   v-if="user"
+                   @click="toggleLikePost">
               <v-icon large
-                      color="grey">favorite</v-icon>
+                      :color="checkIfPostLiked(getPost._id) ? 'warning': 'grey'">favorite</v-icon>
             </v-btn>
 
             <h3 class="ml-3 font-weight-thin">{{getPost.likes}} likes</h3>
@@ -128,7 +129,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { GET_POST, ADD_POST_MESSAGE } from "../../queries";
+import { GET_POST, ADD_POST_MESSAGE, LIKE_POST, UNLIKE_POST } from "../../queries";
 
 export default {
   name: "Post",
@@ -137,6 +138,7 @@ export default {
   },
   data() {
     return {
+      postLiked: false,
       dialog: false,
       messageBody: "",
       isFormValid: true,
@@ -157,7 +159,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(["user"])
+    ...mapGetters(["user", "userFavorites"])
   },
   methods: {
     goBackPage() {
@@ -207,6 +209,90 @@ export default {
     // 檢查留言是否為自己
     checkOwnMessage(message) {
       return this.user && this.user._id === message.messageUser._id;
+    },
+    // 檢查此篇文章是否已加入我的喜愛文章內
+    checkIfPostLiked(postId) {
+      // 如果我的最愛文章內有值，使用array.some()方法歷遍所有喜愛文章，並檢查是否符合
+      if (this.userFavorites && this.userFavorites.some(fave => fave._id === postId)) {
+        this.postLiked = true;
+        return true;
+      } else {
+        this.postLiked = false;
+        return false;
+      }
+    },
+    toggleLikePost() {
+      if (this.postLiked) {
+        this.unLikePost();
+      } else {
+        this.likePost();
+      }
+    },
+    // 新增喜愛文章
+    likePost() {
+      const variables = {
+        postId: this.postId,
+        username: this.user.username
+      };
+      this.$apollo
+        .mutate({
+          mutation: LIKE_POST,
+          variables,
+          // 新增完後在前端同步更新like post資料
+          update: (cache, { data: { likePost } }) => {
+            // 取出當前資訊
+            const data = cache.readQuery({
+              query: GET_POST,
+              variables: { postId: this.postId }
+            });
+            data.getPost.likes += 1;
+            // 將新增的資訊寫入
+            cache.writeQuery({
+              query: GET_POST,
+              variables: { postId: this.postId },
+              data
+            });
+          }
+        })
+        .then(({ data }) => {
+          // 成功添加後，在前端同步更新user喜愛文章的資料
+          const updatedUser = { ...this.user, favorites: data.likePost.favorites };
+          this.$store.commit("setUser", updatedUser);
+        })
+        .catch(err => console.error(err));
+    },
+    // 取消喜愛文章
+    unLikePost() {
+      const variables = {
+        postId: this.postId,
+        username: this.user.username
+      };
+      this.$apollo
+        .mutate({
+          mutation: UNLIKE_POST,
+          variables,
+          // 新增完後在前端同步更新like post資料
+          update: (cache, { data: { unlikePost } }) => {
+            // 取出當前資訊
+            const data = cache.readQuery({
+              query: GET_POST,
+              variables: { postId: this.postId }
+            });
+            data.getPost.likes -= 1;
+            // 將取消完後的資訊寫入
+            cache.writeQuery({
+              query: GET_POST,
+              variables: { postId: this.postId },
+              data
+            });
+          }
+        })
+        .then(({ data }) => {
+          // 成功添加後，在前端同步更新user喜愛文章的資料
+          const updatedUser = { ...this.user, favorites: data.unlikePost.favorites };
+          this.$store.commit("setUser", updatedUser);
+        })
+        .catch(err => console.error(err));
     }
   }
 };

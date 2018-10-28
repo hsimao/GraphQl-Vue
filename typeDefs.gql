@@ -73,4 +73,5 @@ type Mutation {
     categories: [String]!
     description: String!
   ): Post!
+  deleteUserPost(postId: ID!): Post!
 }

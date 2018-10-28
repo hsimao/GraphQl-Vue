@@ -210,6 +210,15 @@ export const UPDATE_USER_POST = gql`
   }
 `;
 
+// 刪除文章
+export const DELETE_USER_POST = gql`
+  mutation($postId: ID!) {
+    deleteUserPost(postId: $postId) {
+      _id
+    }
+  }
+`;
+
 // 新增喜愛文章
 export const LIKE_POST = gql`
   mutation($postId: ID!, $username: String!) {

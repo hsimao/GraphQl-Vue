@@ -12,6 +12,7 @@ import {
   GET_CURRENT_USER,
   ADD_POST,
   UPDATE_USER_POST,
+  DELETE_USER_POST,
   SEARCH_POSTS
 } from "./queries";
 
@@ -208,6 +209,25 @@ export default new Vuex.Store({
             ...state.userPosts.slice(index + 1)
           ];
           // 同步更新到vuex
+          commit("setUserPosts", userPosts);
+        })
+        .catch(err => console.error(err));
+    },
+    // 刪除文章
+    deleteUserPost: ({ state, commit }, payload) => {
+      apolloClient
+        .mutate({
+          mutation: DELETE_USER_POST,
+          variables: payload
+        })
+        .then(({ data }) => {
+          // 找出要刪除的文章位置
+          const index = state.userPosts.findIndex(post => post._id === data.deleteUserPost._id);
+          // 重新將文章覆寫，除了本次刪除文章
+          const userPosts = [
+            ...state.userPosts.slice(0, index),
+            ...state.userPosts.slice(index + 1)
+          ];
           commit("setUserPosts", userPosts);
         })
         .catch(err => console.error(err));

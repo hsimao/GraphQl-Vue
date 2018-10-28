@@ -80,7 +80,8 @@
               fab small dark>
               <v-icon>edit</v-icon>
             </v-btn>
-            <v-btn color="error" fab small dark>
+            <v-btn @click="deleteUserPost(post)"
+              color="error" fab small dark>
               <v-icon>delete</v-icon>
             </v-btn>
 
@@ -226,8 +227,17 @@ export default {
         this.editPostDialog = false;
       }
     },
-    loadPost({ _id, title, imageUrl, categories, description }) {
-      this.editPostDialog = true;
+    deleteUserPost(post) {
+      this.loadPost(post, false);
+      const deletePost = window.confirm("您確定要刪除此篇文章嗎？");
+      if (deletePost) {
+        this.$store.dispatch("deleteUserPost", {
+          postId: this.postId
+        });
+      }
+    },
+    loadPost({ _id, title, imageUrl, categories, description }, editPostDialog = true) {
+      this.editPostDialog = editPostDialog;
       this.postId = _id;
       this.title = title;
       this.imageUrl = imageUrl;

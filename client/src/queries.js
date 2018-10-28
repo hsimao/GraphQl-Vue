@@ -177,6 +177,39 @@ export const ADD_POST = gql`
   }
 `;
 
+// 更新文章
+export const UPDATE_USER_POST = gql`
+  mutation(
+    $postId: ID!
+    $userId: ID!
+    $title: String!
+    $imageUrl: String!
+    $categories: [String]!
+    $description: String!
+  ) {
+    updateUserPost(
+      postId: $postId
+      userId: $userId
+      title: $title
+      imageUrl: $imageUrl
+      categories: $categories
+      description: $description
+    ) {
+      _id
+      title
+      imageUrl
+      categories
+      description
+      createdDate
+      likes
+      createdBy {
+        _id
+        avatar
+      }
+    }
+  }
+`;
+
 // 新增喜愛文章
 export const LIKE_POST = gql`
   mutation($postId: ID!, $username: String!) {

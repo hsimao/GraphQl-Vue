@@ -11,6 +11,7 @@ import {
   SIGNUP_USER,
   GET_CURRENT_USER,
   ADD_POST,
+  UPDATE_USER_POST,
   SEARCH_POSTS
 } from "./queries";
 
@@ -189,6 +190,27 @@ export default new Vuex.Store({
         .catch(err => {
           console.error(err);
         });
+    },
+    // 更新文章
+    updateUserPost: ({ state, commit }, payload) => {
+      apolloClient
+        .mutate({
+          mutation: UPDATE_USER_POST,
+          variables: payload
+        })
+        .then(({ data }) => {
+          // 找出本次更新文章的位置
+          const index = state.userPosts.findIndex(post => post._id === data.updateUserPost._id);
+          // 將本次更新的文章覆蓋上去
+          const userPosts = [
+            ...state.userPosts.slice(0, index),
+            data.updateUserPost,
+            ...state.userPosts.slice(index + 1)
+          ];
+          // 同步更新到vuex
+          commit("setUserPosts", userPosts);
+        })
+        .catch(err => console.error(err));
     },
     // 搜尋文章
     searchPosts: ({ commit }, payload) => {

@@ -13,7 +13,8 @@ import {
   ADD_POST,
   UPDATE_USER_POST,
   DELETE_USER_POST,
-  SEARCH_POSTS
+  SEARCH_POSTS,
+  INFINITE_SCROLL_POSTS
 } from "./queries";
 
 Vue.use(Vuex);
@@ -176,14 +177,24 @@ export default new Vuex.Store({
             });
           },
           // 觸發更新UI,opitmisticRespones可確保更新時立即添加數據
-          opitmisticRespones: {
+          optimisticRespones: {
             __typename: "Mutation",
             addPost: {
               __typename: "Post",
               _id: -1,
               ...payload
             }
-          }
+          },
+          // 成功改變時重新觸發文章列表，將新的文章同步更新
+          refetchQueries: [
+            {
+              query: INFINITE_SCROLL_POSTS,
+              variables: {
+                pageNum: 1,
+                pageSize: 4
+              }
+            }
+          ]
         })
         .then(({ data }) => {
           console.log(data.addPost);

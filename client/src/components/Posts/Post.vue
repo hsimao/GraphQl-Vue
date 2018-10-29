@@ -1,57 +1,46 @@
 <template>
-  <v-container v-if="getPost"
-               class="mt-3"
-               flexbox
-               center>
+  <v-container v-if="getPost" class="mt-3"
+    flexbox center>
 
     <!-- post card -->
-    <v-layout row
-              wrap>
+    <v-layout row wrap>
       <v-flex xs12>
         <v-card hover>
           <v-card-title>
             <h1>{{getPost.title}}</h1>
 
             <!-- 新增我的最愛按鈕, 有登入才顯示 -->
-            <v-btn large
-                   icon
-                   v-if="user"
-                   @click="toggleLikePost">
-              <v-icon large
-                      :color="checkIfPostLiked(getPost._id) ? 'warning': 'grey'">favorite</v-icon>
+            <v-btn large icon v-if="user" @click="toggleLikePost">
+              <v-icon large :color="checkIfPostLiked(getPost._id) ? 'warning': 'grey'">favorite</v-icon>
             </v-btn>
 
-            <h3 class="ml-3 font-weight-thin">{{getPost.likes}} likes</h3>
+            <h3 class="ml-3 font-weight-thin">{{getPost.likes}}
+              likes</h3>
             <v-spacer></v-spacer>
-            <v-icon @click="goBackPage"
-                    color="info"
-                    large>arrow_back</v-icon>
+            <v-icon @click="goBackPage" color="info"
+              large>arrow_back</v-icon>
           </v-card-title>
 
           <v-tooltip right>
             <span>點擊放大圖片</span>
-            <v-img @click="imageToggle"
-                   slot="activator"
-                   :src="getPost.imageUrl"
-                   id="post__image"></v-img>
+            <v-img @click="imageToggle" slot="activator"
+              :src="getPost.imageUrl" id="post__image"></v-img>
           </v-tooltip>
 
           <!-- 大圖彈窗 -->
           <v-dialog v-model="dialog">
             <v-card>
               <v-img :src="getPost.imageUrl"
-                     height="80vh"
-                     @click="dialog = !dialog"></v-img>
+                height="80vh" @click="dialog = !dialog"></v-img>
             </v-card>
           </v-dialog>
 
           <!-- 文章內容 -->
           <v-card-text>
             <span v-for="(category, index) in getPost.categories"
-                  :key="index">
-              <v-chip class="md-3"
-                      color="accent"
-                      text-color="white">{{category}}</v-chip>
+              :key="index">
+              <v-chip class="md-3" color="accent"
+                text-color="white">{{category}}</v-chip>
             </span>
             <h3>{{getPost.description}}</h3>
           </v-card-text>
@@ -61,25 +50,19 @@
     </v-layout>
 
     <!-- 留言輸入框 -->
-    <v-layout class="md-3"
-              v-if="user">
+    <v-layout class="md-3" v-if="user">
       <v-flex xs12>
         <v-form v-model="isFormValid"
-                lazy-validation
-                ref="form"
-                @submit.prevent="addMessage">
+          lazy-validation ref="form"
+          @submit.prevent="addMessage">
           <v-layout row>
             <v-flex xs12>
               <!-- input -->
               <v-text-field @click:append-outer="addMessage"
-                            :rules="messageRules"
-                            v-model="messageBody"
-                            clearable
-                            :append-outer-icon="messageBody && 'send'"
-                            label="新增留言"
-                            type="text"
-                            prepend-icon="email"
-                            required></v-text-field>
+                :rules="messageRules" v-model="messageBody"
+                clearable :append-outer-icon="messageBody && 'send'"
+                label="新增留言" type="text"
+                prepend-icon="email" required></v-text-field>
             </v-flex>
           </v-layout>
         </v-form>
@@ -87,19 +70,16 @@
     </v-layout>
 
     <!-- 留言列表 -->
-    <v-layout row
-              wrap>
+    <v-layout row wrap>
       <v-flex xs12>
-        <v-list subheader
-                two-line>
-          <v-subheader>留言 ({{getPost.messages.length}})</v-subheader>
+        <v-list subheader two-line>
+          <v-subheader>留言
+            ({{getPost.messages.length}})</v-subheader>
 
           <template v-for="message in getPost.messages">
             <v-divider :key="message._id"></v-divider>
 
-            <v-list-tile avatar
-                         inset
-                         :key="message.title">
+            <v-list-tile avatar inset :key="message.title">
               <v-list-tile-avatar>
                 <img :src="message.messageUser.avatar">
               </v-list-tile-avatar>
@@ -110,7 +90,7 @@
                 </v-list-tile-title>
                 <v-list-tile-sub-title>
                   {{message.messageUser.username}}
-                  <span class="grey--text text--lighten-1 hidden-xs-only">{{message.messageDate}}</span>
+                  <span class="grey--text text--lighten-1 hidden-xs-only">{{getTimeFromNow(message.messageDate)}}</span>
                 </v-list-tile-sub-title>
               </v-list-tile-content>
 
@@ -128,6 +108,8 @@
 </template>
 
 <script>
+import moment from "moment";
+
 import { mapGetters } from "vuex";
 import { GET_POST, ADD_POST_MESSAGE, LIKE_POST, UNLIKE_POST } from "../../queries";
 
@@ -162,6 +144,10 @@ export default {
     ...mapGetters(["user", "userFavorites"])
   },
   methods: {
+    // 格式化時間：轉換資料時間到目前時間共間隔了多久
+    getTimeFromNow(time) {
+      return moment(new Date(time)).fromNow();
+    },
     goBackPage() {
       this.$router.go(-1);
     },

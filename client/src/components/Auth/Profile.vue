@@ -7,15 +7,13 @@
           <v-flex xs5>
             <v-avatar slot="activator" size="100px">
               <img :src="user.avatar" alt="Avatar">
-              <!-- <v-icon v-else :color="message.color"
-                v-text="message.icon"></v-icon> -->
             </v-avatar>
           </v-flex>
           <v-flex xs7>
             <v-card-title primary-title>
               <div>
                 <div class="headline">{{user.username}}</div>
-                <div>加入時間：{{user.joinDate}}</div>
+                <div>加入時間：{{formatDate(user.joinDate)}}</div>
                 <div class="hidden-xs-only font-weight-thin">{{user.favorites.length}}
                   篇喜愛文章</div>
                 <div class="hidden-xs-only font-weight-thin">已創作
@@ -179,6 +177,8 @@
 
 <script>
 import { mapGetters } from "vuex";
+import moment from "moment";
+moment.locale("zh-TW");
 
 export default {
   name: "Profile",
@@ -206,6 +206,9 @@ export default {
     ...mapGetters(["user", "userFavorites", "userPosts"])
   },
   methods: {
+    formatDate(date) {
+      return moment(new Date(date)).format("ll");
+    },
     getUserPosts() {
       this.$store.dispatch("getUserPosts", {
         userId: this.user._id

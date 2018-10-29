@@ -3,22 +3,29 @@
 
     <!-- post cards -->
     <v-layout row wrap v-if="infiniteScrollPosts">
-      <v-flex xs12 sm6 v-for="post in infiniteScrollPosts.posts" :key="post._id">
+      <v-flex xs12 sm6 v-for="post in infiniteScrollPosts.posts"
+        :key="post._id">
 
         <v-card hover @click.native="goToPost(post._id)">
-          <v-img :src="post.imageUrl" height="30vh" lazy></v-img>
+          <v-img :src="post.imageUrl" height="30vh"
+            lazy></v-img>
 
           <!-- 文章標題、喜歡次數、留言次數 -->
           <v-card-actions>
             <v-card-title primary>
               <div>
                 <div class="headline">{{post.title}}</div>
-                <span class="grey--text">{{post.likes}} likes - {{post.messages.length}} comments</span>
+                <span class="grey--text">{{post.likes}}
+                  likes -
+                  {{post.messages.length}}
+                  comments</span>
               </div>
             </v-card-title>
             <v-spacer></v-spacer>
-            <v-btn @click.stop="showPostCreator = !showPostCreator" icon>
-              <v-icon>{{`keyboard_arrow_${showPostCreator ? 'up' : 'down'}`}}</v-icon>
+            <v-btn @click.stop="showPostCreator = !showPostCreator"
+              icon>
+              <v-icon>{{`keyboard_arrow_${showPostCreator
+                ? 'up' : 'down'}`}}</v-icon>
             </v-btn>
           </v-card-actions>
 
@@ -34,7 +41,8 @@
                 <!-- 作者名稱、創建日期 -->
                 <v-list-tile-content>
                   <v-list-tile-title class="text--primary">{{post.createdBy.username}}</v-list-tile-title>
-                  <span class="grey--text u-text-more">創建日期 {{post.createdDate}}</span>
+                  <span class="grey--text u-text-more">創建日期
+                    {{formatDate(post.createdDate)}}</span>
                 </v-list-tile-content>
 
                 <v-list-tile-action>
@@ -64,6 +72,7 @@
 
 <script>
 import { INFINITE_SCROLL_POSTS } from "../../queries";
+import moment from "moment";
 
 // 每次載入的文章數量
 const pageSize = 4;
@@ -90,6 +99,9 @@ export default {
   methods: {
     goToPost(id) {
       this.$router.push(`/posts/${id}`);
+    },
+    formatDate(date) {
+      return moment(new Date(date)).format("YYYY-MM-DD");
     },
     // 抓取更多文章資訊，並更新資料
     showMorePosts() {
